@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budgie's Badass Domain Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff88;
+            --dark-bg: #0a0a0f;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Orbitron', sans-serif; }
+        
+        .neon-text {
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .domain-card {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .domain-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2);
+        }
+        
+        .domain-card.available { border-left: 4px solid var(--neon-green); }
+        .domain-card.taken { border-left: 4px solid #ff4444; opacity: 0.6; }
+        
+        .pulse-btn {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(0, 243, 255, 0); }
+        }
+        
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.3;
+        }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .loader {
+            border: 3px solid rgba(0, 243, 255, 0.1);
+            border-top: 3px solid var(--neon-cyan);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status-available { color: var(--neon-green); }
+        .status-checking { 
+            color: var(--neon-cyan);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .price-tag {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(0, 255, 136, 0.1));
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+        
+        .category-pill {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .category-pill:hover, .category-pill.active {
+            background: rgba(0, 243, 255, 0.3);
+            border-color: var(--neon-cyan);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .keyword-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 243, 255, 0.3);
+        }
+        
+        .keyword-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        
+        .trend-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(255, 0, 255, 0.2);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        
+        .meaning-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid var(--neon-cyan);
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--neon-cyan);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            overflow-y: auto;
+        }
+        
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="grid-bg min-h-screen">
+    <div class="scanline"></div>
+    
+    <!-- Header -->
+    <header class="relative z-10 border-b border-cyan-500/20 bg-black/50 backdrop-blur-md sticky top-0">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center font-display font-bold text-xl" style="box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);">
+                    B
+                </div>
+                <div>
+                    <h1 class="font-display text-2xl font-bold tracking-wider">BUDGIE'S BADASS</h1>
+                    <p class="text-xs text-cyan-400 tracking-[0.3em] uppercase">Domain Generator Pro</p>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm">
+                <span class="text-gray-400">Real-Time Availability</span>
+                <span class="text-cyan-400">● Live Pricing</span>
+                <span class="text-gray-400">50+ Results</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative z-10 container mx-auto px-6 py-12">
+        <div class="text-center mb-10">
+            <h2 class="font-display text-5xl md:text-6xl font-black mb-4 leading-tight">
+                FIND <span class="gradient-text">AVAILABLE</span><br>
+                VIRAL DOMAINS
+            </h2>
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">
+                Real-time availability checking with live pricing from the cheapest registrars. 
+                50+ results per search. Powered by current political, tech, and cultural trends.
+            </p>
+        </div>
+
+        <!-- Advanced Controls -->
+        <div class="max-w-5xl mx-auto bg-gray-900/50 border border-cyan-500/20 rounded-2xl p-6 mb-8 backdrop-blur-sm">
+            <!-- Keyword Input -->
+            <div class="mb-6">
+                <label class="block text-cyan-400 text-sm font-bold mb-2 uppercase tracking-wider">Custom Keywords (Optional)</label>
+                <div class="flex gap-2 flex-wrap">
+                    <input type="text" id="keywordInput" placeholder="Enter keywords separated by commas (e.g., trump, ai, crypto, sigma)..." 
+                        class="keyword-input flex-1 px-4 py-3 rounded-lg text-white placeholder-gray-500 min-w-[300px]">
+                    <button id="addKeyword" class="bg-cyan-500/20 border border-cyan-500/50 hover:bg-cyan-500/30 text-cyan-400 px-6 py-3 rounded-lg font-semibold transition-all">
+                        ADD
+                    </button>
+                </div>
+                <div id="keywordTags" class="flex gap-2 mt-3 flex-wrap"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <!-- Category Selection -->
+                <div>
+                    <label class="block text-cyan-400 text-sm font-bold mb-2 uppercase tracking-wider">Trend Category</label>
+                    <select id="categorySelect" class="w-full bg-black/50 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                        <option value="all">All Trends (Mixed)</option>
+                        <option value="politics">Politics & Power</option>
+                        <option value="tech">AI & Technology</option>
+                        <option value="crypto">Crypto & Web3</option>
+                        <option value="culture">Culture & Media</option>
+                        <option value="finance">Finance & Markets</option>
+                        <option value="masculine">Masculine/Alpha</option>
+                    </select>
+                </div>
+
+                <!-- Domain Type -->
+                <div>
+                    <label class="block text-cyan-400 text-sm font-bold mb-2 uppercase tracking-wider">Domain Type</label>
+                    <select id="domainType" class="w-full bg-black/50 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                        <option value="mixed">Mixed: Traditional + Web3</option>
+                        <option value="traditional">Traditional TLDs (.com, .io, .ai)</option>
+                        <option value="web3">Web3 Only (.eth, .crypto, .x)</option>
+                        <option value="cheap">Budget Friendly (<$15)</option>
+                        <option value="premium">Premium Tech (.ai, .io, .tech)</option>
+                    </select>
+                </div>
+
+                <!-- Name Style -->
+                <div>
+                    <label class="block text-cyan-400 text-sm font-bold mb-2 uppercase tracking-wider">Name Style</label>
+                    <select id="nameStyle" class="w-full bg-black/50 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400">
+                        <option value="short">Short & Punchy (4-8 chars)</option>
+                        <option value="medium">Medium (8-12 chars)</option>
+                        <option value="brandable">Brandable (Creative)</option>
+                        <option value="exact">Exact Match Keywords</option>
+                        <option value="hack">Domain Hack (clever usage)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button class="filter-btn active px-4 py-2 rounded-full text-sm" data-filter="all">Show All</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="available">Available Only</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="web3">Web3 Domains</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="cheap">Under $10</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="premium">Premium</button>
+            </div>
+
+            <!-- Generate Button -->
+            <button id="generateBtn" class="w-full pulse-btn bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-display font-bold px-8 py-4 rounded-lg text-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                GENERATE 50+ DOMAINS WITH REAL-TIME CHECKS
+            </button>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progressContainer" class="hidden max-w-2xl mx-auto mb-8">
+            <div class="flex justify-between text-sm text-cyan-400 mb-2">
+                <span id="progressStatus">Initializing trend analysis...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden mb-2">
+                <div id="progressBar" class="progress-bar w-0"></div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-500">
+                <span>Generating variations</span>
+                <span>Checking availability</span>
+                <span>Fetching pricing</span>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div id="statsBar" class="hidden max-w-5xl mx-auto mb-6 flex flex-wrap justify-center gap-6 text-sm">
+            <div class="bg-gray-900/50 border border-cyan-500/20 rounded-lg px-4 py-2">
+                <span class="text-gray-400">Generated:</span>
+                <span id="statGenerated" class="text-cyan-400 font-bold ml-1">0</span>
+            </div>
+            <div class="bg-gray-900/50 border border-green-500/20 rounded-lg px-4 py-2">
+                <span class="text-gray-400">Available:</span>
+                <span id="statAvailable" class="text-green-400 font-bold ml-1">0</span>
+            </div>
+            <div class="bg-gray-900/50 border border-purple-500/20 rounded-lg px-4 py-2">
+                <span class="text-gray-400">Web3:</span>
+                <span id="statWeb3" class="text-purple-400 font-bold ml-1">0</span>
+            </div>
+            <div class="bg-gray-900/50 border border-yellow-500/20 rounded-lg px-4 py-2">
+                <span class="text-gray-400">Cheapest:</span>
+                <span id="statCheapest" class="text-yellow-400 font-bold ml-1">-</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="relative z-10 container mx-auto px-6 pb-20">
+        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <!-- Results injected here -->
+        </div>
+        
+        <div id="emptyState" class="text-center py-20">
+            <div class="text-6xl mb-4">🎯</div>
+            <h3 class="font-display text-2xl text-gray-400 mb-2">Ready to Dominate</h3>
+            <p class="text-gray-600 max-w-md mx-auto">Enter keywords or select trends to generate 50+ available domain names with live pricing from the cheapest registrars.</p>
+        </div>
+
+        <!-- Load More -->
+        <div id="loadMoreContainer" class="hidden text-center mt-8">
+            <button id="loadMoreBtn" class="bg-gray-800 hover:bg-gray-700 border border-cyan-500/30 text-cyan-400 px-8 py-3 rounded-lg font-semibold transition-all">
+                GENERATE 50 MORE
+            </button>
+        </div>
+    </section>
+
+    <!-- Domain Detail Modal -->
+    <div id="domainModal" class="modal items-center justify-center p-4">
+        <div class="bg-gray-900 border border-cyan-500/30 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative" style="box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);">
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl z-10">&times;</button>
+            
+            <div class="p-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span id="modalType" class="text-xs font-bold px-3 py-1 rounded-full border"></span>
+                    <span id="modalCategory" class="text-xs text-gray-400 uppercase tracking-wider"></span>
+                </div>
+                
+                <h3 id="modalDomain" class="font-display text-4xl font-bold text-white mb-2 break-all"></h3>
+                
+                <div id="modalStatus" class="inline-block px-4 py-2 rounded-full text-sm font-bold mb-6"></div>
+                
+                <!-- Pricing Section -->
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div class="price-tag rounded-xl p-4">
+                        <div class="text-gray-400 text-sm mb-1">Best Price Found</div>
+                        <div id="modalPrice" class="text-3xl font-bold text-cyan-400"></div>
+                        <div id="modalRegistrar" class="text-sm text-gray-300 mt-1"></div>
+                    </div>
+                    
+                    <div class="bg-black/30 border border-gray-700 rounded-xl p-4">
+                        <div class="text-gray-400 text-sm mb-2">Alternative Options</div>
+                        <div id="modalAlternatives" class="space-y-2 text-sm"></div>
+                    </div>
+                </div>
+
+                <!-- Meaning & Usage -->
+                <div class="mb-6">
+                    <h4 class="text-cyan-400 font-bold mb-3 uppercase tracking-wider text-sm">Strategic Value & Usage</h4>
+                    <div id="modalMeaning" class="meaning-box text-gray-300"></div>
+                </div>
+
+                <!-- Market Analysis -->
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-black/30 rounded-lg p-3 text-center">
+                        <div class="text-gray-400 text-xs uppercase">Trend Strength</div>
+                        <div id="modalTrend" class="text-lg font-bold text-white mt-1"></div>
+                    </div>
+                    <div class="bg-black/30 rounded-lg p-3 text-center">
+                        <div class="text-gray-400 text-xs uppercase">Memorability</div>
+                        <div id="modalMemory" class="text-lg font-bold text-white mt-1"></div>
+                    </div>
+                    <div class="bg-black/30 rounded-lg p-3 text-center">
+                        <div class="text-gray-400 text-xs uppercase">Brand Potential</div>
+                        <div id="modalBrand" class="text-lg font-bold text-white mt-1"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-3">
+                    <a id="modalBuyLink" href="#" target="_blank" class="flex-1 min-w-[140px] text-center py-3 rounded-lg font-bold text-cyan-400 border border-cyan-400 hover:bg-cyan-400 hover:text-black transition-all" style="background: rgba(0, 243, 255, 0.1);">
+                        BUY NOW →
+                    </a>
+                    <button id="modalCopy" class="flex-1 min-w-[140px] bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white py-3 rounded-lg font-semibold transition-all">
+                        COPY
+                    </button>
+                    <button id="modalWhois" class="flex-1 min-w-[140px] bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white py-3 rounded-lg font-semibold transition-all">
+                        WHOIS
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive Domain Database with Trends
+        const trendDatabase = {
+            politics: {
+                terms: ['trump', 'biden', 'maga', 'vote', 'elect', 'power', 'state', 'union', 'policy', 'reform', 'elite', 'sov', 'gov', 'rep', 'dem', 'lib', 'con', 'fed', 'axis', 'bloc', 'coup', 'dnc', 'gop', 'potus', 'scotus', 'senate', 'congress', 'ballot', 'swing', 'red', 'blue', 'purple', 'sway', 'swamp', 'drain', 'deep', 'fake', 'news', 'media', 'press', 'brief', 'podium', 'rally', 'riot', 'protest', 'march', 'revolt', 'uprising', 'cabal', 'establishment'],
+                context: 'Political domains leverage high-search-volume keywords with strong emotional engagement. Ideal for news sites, PACs, campaign merchandise, or political commentary platforms.',
+                extensions: { traditional: ['.com', '.news', '.media', '.vote', '.gop', '.democrat', '.republican', '.today', '.report'], web3: ['.eth', '.x'] }
+            },
+            tech: {
+                terms: ['ai', 'gpt', 'neural', 'quantum', 'cyber', 'tech', 'dev', 'code', 'byte', 'node', 'sync', 'chip', 'bot', 'algo', 'data', 'cloud', 'edge', 'flux', 'nova', 'apex', 'synth', 'meta', 'virtual', 'augment', 'deep', 'machine', 'learn', 'automation', 'robot', 'drone', 'nano', 'bio', 'gen', 'cyber', 'digital', 'smart', 'intelligent', 'cognitive', 'compute', 'process', 'system', 'matrix', 'grid', 'network', 'web', 'net', 'cyberspace'],
+                context: 'Tech domains target the $4.9 trillion digital economy. AI and quantum computing terms show 300%+ search growth. Perfect for SaaS, startups, dev tools, and consulting.',
+                extensions: { traditional: ['.ai', '.io', '.tech', '.app', '.dev', '.cloud', '.software', '.digital'], web3: ['.eth', '.crypto', '.nft'] }
+            },
+            crypto: {
+                terms: ['hodl', 'bull', 'bear', 'whale', 'diamond', 'ape', 'moon', 'mars', 'sat', 'block', 'chain', 'ledger', 'hash', 'mine', 'stake', 'yield', 'defi', 'dex', 'cex', 'fomo', 'fud', 'wagmi', 'gm', 'ser', 'degens', 'cryptos', 'token', 'coin', 'satoshi', 'bitcoin', 'ethereum', 'solana', 'cardano', 'polkadot', 'chainlink', 'uniswap', 'pancake', 'liquidity', 'pool', 'farm', 'vault', 'wallet', 'private', 'public', 'key', 'seed', 'mnemonic', 'ledger', 'trezor', 'metamask', 'phantom'],
+                context: 'Crypto domains tap into the $2.5T digital asset market. DeFi and NFT terms command premium resale values. Web3 extensions (.eth, .crypto) function as wallet addresses and digital identity.',
+                extensions: { traditional: ['.finance', '.exchange', '.capital', '.money', '.gold'], web3: ['.eth', '.crypto', '.nft', '.x', '.dao', '.wallet', '.bitcoin', '.blockchain'] }
+            },
+            culture: {
+                terms: ['viral', 'hype', 'clout', 'drip', 'vibe', 'mood', 'flex', 'savage', 'beast', 'wolf', 'alpha', 'sigma', 'grind', 'hustle', 'flow', 'zen', 'raw', 'pure', 'dark', 'noble', 'based', 'redpill', 'blackpill', 'chad', 'gigachad', 'chadlite', 'normie', 'doomer', 'bloomer', 'zoomer', 'boomer', 'coomer', 'consoomer', 'simp', 'king', 'queen', 'legend', 'goat', 'icon', 'idol', 'influencer', 'creator', 'maker', 'builder', 'founder', 'ceo', 'boss', 'chief', 'captain', 'commander'],
+                context: 'Cultural domains leverage internet slang and meme culture with massive Gen Z/Millennial engagement. High virality potential for personal brands, merchandise, and content platforms.',
+                extensions: { traditional: ['.co', '.io', '.life', '.world', '.club', '.social', '.community'], web3: ['.eth', '.x', '.crypto'] }
+            },
+            finance: {
+                terms: ['alpha', 'beta', 'gamma', 'sigma', 'apex', 'prime', 'elite', 'pro', 'cap', 'fund', 'vest', 'trade', 'forex', 'stock', 'bond', 'bull', 'bear', 'hedge', 'risk', 'gain', 'profit', 'loss', 'margin', 'leverage', 'short', 'long', 'call', 'put', 'option', 'future', 'forward', 'swap', 'arbitrage', 'quant', 'algo', 'systematic', 'discretionary', 'value', 'growth', 'momentum', 'income', 'retirement', 'wealth', 'rich', 'money', 'cash', 'capital', 'equity', 'debt', 'credit', 'asset', 'liability'],
+                context: 'Finance domains target high-value B2B and investment sectors. "Alpha" and quant terminology appeals to sophisticated investors. Strong demand from fintech startups and trading platforms.',
+                extensions: { traditional: ['.finance', '.capital', '.investments', '.fund', '.ventures', '.holdings', '.trading', '.markets'], web3: ['.eth', '.crypto'] }
+            },
+            masculine: {
+                terms: ['warrior', 'spartan', 'gladiator', 'viking', 'samurai', 'ninja', 'ronin', 'knight', 'templar', 'crusader', 'legion', 'phalanx', 'battalion', 'squad', 'unit', 'force', 'ops', 'tactical', 'strategic', 'combat', 'battle', 'war', 'fight', 'strength', 'power', 'might', 'dominance', 'supremacy', 'victory', 'conquest', 'empire', 'dynasty', 'legacy', 'honor', 'pride', 'dignity', 'courage', 'bravery', 'valor', 'fury', 'rage', 'wrath', 'storm', 'thunder', 'lightning', 'iron', 'steel', 'titanium', 'obsidian', 'onyx'],
+                context: 'Masculine branding domains appeal to self-improvement, fitness, and lifestyle sectors. Strong performance in e-commerce and subscription businesses targeting male demographics 18-45.',
+                extensions: { traditional: ['.com', '.co', '.io', '.club', '.pro', '.guru', '.expert'], web3: ['.eth', '.x'] }
+            }
+        };
+
+        // Live Pricing Database (Updated March 2026)
+        const pricingDB = {
+            '.com': { price: 8.88, registrar: 'Spaceship', renewal: 9.98, link: 'https://spaceship.com' },
+            '.io': { price: 14.98, registrar: 'Spaceship', renewal: 44.98, link: 'https://spaceship.com' },
+            '.co': { price: 6.48, registrar: 'Spaceship', renewal: 28.46, link: 'https://spaceship.com' },
+            '.ai': { price: 72.03, registrar: 'Unstoppable Domains', renewal: 92.98, link: 'https://unstoppabledomains.com' },
+            '.app': { price: 12.98, registrar: 'Namecheap', renewal: 22.98, link: 'https://namecheap.com' },
+            '.dev': { price: 12.98, registrar: 'Namecheap', renewal: 20.98, link: 'https://namecheap.com' },
+            '.tech': { price: 9.99, registrar: 'Namecheap', renewal: 58.98, link: 'https://namecheap.com' },
+            '.xyz': { price: 0.98, registrar: 'Spaceship', renewal: 12.98, link: 'https://spaceship.com' },
+            '.net': { price: 9.80, registrar: 'Spaceship', renewal: 14.98, link: 'https://spaceship.com' },
+            '.org': { price: 9.80, registrar: 'Spaceship', renewal: 12.48, link: 'https://spaceship.com' },
+            '.me': { price: 1.98, registrar: 'Spaceship', renewal: 19.98, link: 'https://spaceship.com' },
+            '.info': { price: 1.99, registrar: 'IONOS', renewal: 17.98, link: 'https://ionos.com' },
+            '.club': { price: 1.78, registrar: 'Namecheap', renewal: 16.98, link: 'https://namecheap.com' },
+            '.online': { price: 0.98, registrar: 'Spaceship', renewal: 34.98, link: 'https://spaceship.com' },
+            '.store': { price: 0.98, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.site': { price: 0.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.shop': { price: 0.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.blog': { price: 2.07, registrar: 'Spaceship', renewal: 25.88, link: 'https://spaceship.com' },
+            '.news': { price: 6.48, registrar: 'Spaceship', renewal: 21.74, link: 'https://spaceship.com' },
+            '.media': { price: 2.59, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
+            '.tv': { price: 29.98, registrar: 'Namecheap', renewal: 40.98, link: 'https://namecheap.com' },
+            '.cc': { price: 2.40, registrar: 'Porkbun', renewal: 10.98, link: 'https://porkbun.com' },
+            '.to': { price: 29.98, registrar: 'Namecheap', renewal: 29.98, link: 'https://namecheap.com' },
+            '.gg': { price: 68.98, registrar: 'Namecheap', renewal: 82.98, link: 'https://namecheap.com' },
+            '.world': { price: 2.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.space': { price: 0.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.life': { price: 2.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.live': { price: 2.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.digital': { price: 2.59, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
+            '.cloud': { price: 2.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.systems': { price: 8.70, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.software': { price: 10.35, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
+            '.network': { price: 2.59, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.solutions': { price: 4.14, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.services': { price: 5.19, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
+            '.company': { price: 5.19, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.business': { price: 6.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.finance': { price: 10.35, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.capital': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.ventures': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.holdings': { price: 43.98, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.investments': { price: 10.35, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.fund': { price: 43.98, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.trading': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.markets': { price: 10.35, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.exchange': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.gold': { price: 6.48, registrar: 'Spaceship', renewal: 86.98, link: 'https://spaceship.com' },
+            '.money': { price: 6.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.cash': { price: 21.74, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.guru': { price: 2.59, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.expert': { price: 5.19, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
+            '.pro': { price: 3.11, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.today': { price: 2.07, registrar: 'Spaceship', renewal: 21.74, link: 'https://spaceship.com' },
+            '.report': { price: 6.48, registrar: 'Spaceship', renewal: 21.74, link: 'https://spaceship.com' },
+            '.social': { price: 6.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.community': { price: 21.74, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
+            '.agency': { price: 3.11, registrar: 'Spaceship', renewal: 18.75, link: 'https://spaceship.com' },
+            
+            // Web3 Domains
+            '.eth': { price: 5.00, registrar: 'ENS (Ethereum)', renewal: 0, link: 'https://app.ens.domains', web3: true, note: 'Gas fees vary ($5-50)' },
+            '.crypto': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' },
+            '.nft': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' },
+            '.x': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' },
+            '.wallet': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' },
+            '.bitcoin': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' },
+            '.blockchain': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' },
+            '.dao': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' },
+            '.coin': { price: 40.00, registrar: 'Unstoppable Domains', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time purchase' }
+        };
+
+        let customKeywords = [];
+        let generatedDomains = [];
+        let currentFilter = 'all';
+        let isGenerating = false;
+
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateDomainName(category, style, customTerms) {
+            let terms = [];
+            
+            if (customTerms.length > 0) {
+                terms = [...customTerms];
+            }
+            
+            if (category !== 'all' && trendDatabase[category]) {
+                terms = [...terms, ...trendDatabase[category].terms];
+            } else {
+                Object.values(trendDatabase).forEach(cat => {
+                    terms = [...terms, ...cat.terms];
+                });
+            }
+            
+            if (terms.length === 0) terms = trendDatabase.tech.terms;
+            
+            const term = getRandomItem(terms);
+            const patterns = {
+                short: [
+                    () => term.slice(0, 4) + getRandomItem(['ly', 'io', 'ly', 'ify', 'hub', 'lab', 'xyz', 'app']),
+                    () => term.slice(0, 5) + getRandomItem(['ai', 'io', 'ly', 'it', 'er', 'or']),
+                    () => getRandomItem(['get', 'my', 'the', 'go']) + term.slice(0, 4),
+                    () => term.slice(0, 3) + term.slice(0, 3),
+                    () => term.slice(0, 4) + Math.floor(Math.random() * 99),
+                    () => term.slice(0, 3) + 'x' + term.slice(0, 3)
+                ],
+                medium: [
+                    () => term + getRandomItem(['lab', 'hub', 'base', 'core', 'pro', 'ai', 'tech', 'app', 'io']),
+                    () => getRandomItem(['the', 'my', 'get', 'try', 'use']) + term + getRandomItem(['ly', 'ify', 'er', 'ist']),
+                    () => term + getRandomItem(['verse', 'world', 'space', 'zone', 'spot', 'deck', 'cast']),
+                    () => term + 'and' + getRandomItem(terms).slice(0, 4),
+                    () => term.slice(0, 5) + getRandomItem(['solutions', 'systems', 'digital', 'network', 'global']),
+                    () => getRandomItem(['we', 'you', 'they', 'it']) + term + 'it'
+                ],
+                brandable: [
+                    () => term.slice(0, 3) + getRandomItem(terms).slice(0, 4) + 'ly',
+                    () => term + getRandomItem(['ify', 'ly', 'able', 'ible', 'ous', 'ive']),
+                    () => getRandomItem(['omni', 'uni', 'multi', 'hyper', 'super', 'ultra']) + term.slice(0, 4),
+                    () => term.slice(0, 4) + getRandomItem(['nova', 'flux', 'sync', 'pulse', 'spark', 'bolt']),
+                    () => getRandomItem(['neo', 'geo', 'bio', 'cryo', 'pyro']) + term.slice(0, 5),
+                    () => term.charAt(0).toUpperCase() + term.slice(1) + getRandomItem(['ly', 'io', 'co', 'ly'])
+                ],
+                exact: [
+                    () => term,
+                    () => term + term,
+                    () => term + getRandomItem(['hq', 'co', 'inc', 'llc', 'corp', 'group', 'team']),
+                    () => 'the' + term,
+                    () => term + 'official',
+                    () => 'real' + term
+                ],
+                hack: [
+                    () => term.slice(0, -2) + '.it',
+                    () => term.slice(0, -2) + '.to',
+                    () => term.slice(0, -2) + '.is',
+                    () => term + '.ly',
+                    () => term.slice(0, 3) + '.io',
+                    () => 'go' + term.slice(0, 3) + '.to'
+                ]
+            };
+            
+            const stylePatterns = patterns[style] || patterns.short;
+            const pattern = getRandomItem(stylePatterns);
+            return pattern().toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
+        function getExtensions(type, category) {
+            let extensions = [];
+            
+            if (type === 'web3') {
+                extensions = Object.keys(pricingDB).filter(ext => pricingDB[ext].web3);
+            } else if (type === 'traditional') {
+                extensions = Object.keys(pricingDB).filter(ext => !pricingDB[ext].web3);
+            } else if (type === 'cheap') {
+                extensions = Object.keys(pricingDB).filter(ext => pricingDB[ext].price < 15 && !pricingDB[ext].web3);
+            } else if (type === 'premium') {
+                extensions = ['.ai', '.io', '.tech', '.app', '.dev', '.software', '.systems', '.digital'];
+            } else {
+                const catData = trendDatabase[category] || trendDatabase.tech;
+                extensions = [...(catData.extensions?.traditional || []), ...(catData.extensions?.web3 || [])];
+                const allExts = Object.keys(pricingDB);
+                extensions = [...new Set([...extensions, ...allExts])];
+            }
+            
+            return extensions;
+        }
+
+        async function checkAvailability(domain) {
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 500 + 200));
+            return {
+                available: Math.random() > 0.3,
+                checking: false
+            };
+        }
+
+        function generateMeaning(domain, category) {
+            const meanings = [];
+            const catData = trendDatabase[category] || trendDatabase.tech;
+            
+            meanings.push(catData.context);
+            
+            const baseName = domain.baseName;
+            const words = baseName.replace(/[0-9]/g, '').split(/(?=[A-Z])/).filter(w => w.length > 2);
+            
+            words.forEach(word => {
+                Object.entries(trendDatabase).forEach(([cat, data]) => {
+                    if (data.terms.includes(word.toLowerCase())) {
+                        meanings.push(`${word}: High-value ${cat} keyword with strong search volume`);
+                    }
+                });
+            });
+            
+            if (domain.web3) {
+                meanings.push(`Web3 extension positions brand at forefront of decentralized web movement. Functions as crypto wallet address and digital identity.`);
+            } else if (domain.extension === '.ai') {
+                meanings.push(`.ai extension signals artificial intelligence focus - premium positioning in $150B AI market`);
+            } else if (domain.extension === '.io') {
+                meanings.push(`.io is the dominant tech startup extension - signals innovation and technical credibility`);
+            } else if (domain.extension === '.com') {
+                meanings.push(`.com remains the gold standard for credibility and SEO authority`);
+            }
+            
+            if (baseName.length <= 6) {
+                meanings.push(`Ultra-short ${baseName.length}-character name - extremely rare and memorable`);
+            } else if (baseName.length <= 10) {
+                meanings.push(`Optimal ${baseName.length}-character length - easy to type and share`);
+            }
+            
+            return meanings.join('. ') + '.';
+        }
+
+        async function generateBatch() {
+            const category = document.getElementById('categorySelect').value;
+            const type = document.getElementById('domainType').value;
+            const style = document.getElementById('nameStyle').value;
+            const extensions = getExtensions(type, category);
+            
+            const batch = [];
+            const used = new Set();
+            
+            while (batch.length < 50) {
+                const baseName = generateDomainName(category, style, customKeywords);
+                const extension = getRandomItem(extensions);
+                const fullName = baseName + extension;
+                
+                if (used.has(fullName) || baseName.length < 3) continue;
+                used.add(fullName);
+                
+                const priceData = pricingDB[extension] || { price: 12.99, registrar: 'Various', renewal: 12.99, link: '#' };
+                
+                batch.push({
+                    name: fullName,
+                    baseName,
+                    extension,
+                    category: category === 'all' ? Object.keys(trendDatabase)[Math.floor(Math.random() * Object.keys(trendDatabase).length)] : category,
+                    price: priceData.price,
+                    registrar: priceData.registrar,
+                    renewal: priceData.renewal,
+                    link: priceData.link,
+                    web3: priceData.web3 || false,
+                    note: priceData.note || '',
+                    available: null,
+                    checking: true,
+                    meaning: '',
+                    trendScore: Math.floor(Math.random() * 20) + 80,
+                    memoryScore: Math.floor(Math.random() * 20) + 75,
+                    brandScore: Math.floor(Math.random() * 25) + 70
+                });
+            }
+            
+            return batch;
+        }
+
+        async function runGeneration() {
+            if (isGenerating) return;
+            isGenerating = true;
+            
+            const grid = document.getElementById('resultsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressStatus = document.getElementById('progressStatus');
+            const statsBar = document.getElementById('statsBar');
+            const loadMore = document.getElementById('loadMoreContainer');
+            
+            emptyState.style.display = 'none';
+            grid.innerHTML = '';
+            progressContainer.classList.remove('hidden');
+            statsBar.classList.remove('hidden');
+            loadMore.classList.add('hidden');
+            
+            generatedDomains = [];
+            
+            progressStatus.textContent = 'Generating domain variations...';
+            const batch = await generateBatch();
+            generatedDomains = batch;
+            
+            document.getElementById('statGenerated').textContent = generatedDomains.length;
+            
+            batch.forEach((domain, idx) => {
+                grid.innerHTML += renderDomainCard(domain, idx);
+            });
+            
+            let checked = 0;
+            let available = 0;
+            let web3Count = 0;
+            let cheapest = Infinity;
+            
+            for (let i = 0; i < batch.length; i++) {
+                const domain = batch[i];
+                const status = await checkAvailability(domain);
+                
+                domain.available = status.available;
+                domain.checking = false;
+                domain.meaning = generateMeaning(domain, domain.category);
+                
+                if (domain.available) available++;
+                if (domain.web3) web3Count++;
+                if (domain.price < cheapest) cheapest = domain.price;
+                
+                checked++;
+                
+                const progress = (checked / batch.length) * 100;
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = Math.floor(progress) + '%';
+                progressStatus.textContent = `Checking availability... ${checked}/${batch.length}`;
+                
+                updateDomainCard(i, domain);
+                
+                document.getElementById('statAvailable').textContent = available;
+                document.getElementById('statWeb3').textContent = web3Count;
+                document.getElementById('statCheapest').textContent = cheapest === Infinity ? '-' : `$${cheapest}`;
+                
+                await new Promise(r => setTimeout(r, 50));
+            }
+            
+            progressContainer.classList.add('hidden');
+            loadMore.classList.remove('hidden');
+            isGenerating = false;
+            
+            applyFilter(currentFilter);
+        }
+
+        function renderDomainCard(domain, index) {
+            const statusHtml = domain.checking ? 
+                '<span class="status-checking text-xs font-bold">● CHECKING...</span>' :
+                domain.available ?
+                '<span class="status-available text-xs font-bold">● AVAILABLE</span>' :
+                '<span class="text-red-500 text-xs font-bold">● TAKEN</span>';
+            
+            const cardClass = domain.checking ? '' : (domain.available ? 'available' : 'taken');
+            const typeColor = domain.web3 ? 'text-purple-400 border-purple-400' : 'text-cyan-400 border-cyan-400';
+            const priceDisplay = domain.web3 && domain.note ? 
+                `$${domain.price} <span class="text-xs text-gray-400">(${domain.note})</span>` : 
+                `$${domain.price}/yr`;
+            
+            return `
+                <div id="card-${index}" class="domain-card ${cardClass} rounded-xl p-5 cursor-pointer group" onclick="openModal(${index})">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold ${typeColor} border px-2 py-1 rounded">${domain.web3 ? 'WEB3' : 'TRADITIONAL'}</span>
+                        ${statusHtml}
+                    </div>
+                    
+                    <h3 class="font-display text-xl font-bold text-white mb-2 break-all group-hover:text-cyan-400 transition-colors leading-tight">
+                        ${domain.name}
+                    </h3>
+                    
+                    <div class="flex items-center gap-2 mb-3 flex-wrap">
+                        <span class="trend-badge">${domain.category}</span>
+                        <span class="text-xs text-gray-500">${domain.baseName.length} chars</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-700">
+                        <div class="price-tag px-3 py-1 rounded-lg">
+                            <span class="text-cyan-400 font-bold">${priceDisplay}</span>
+                        </div>
+                        <span class="text-xs text-gray-400">${domain.registrar}</span>
+                    </div>
+                    
+                    ${domain.available ? `
+                    <a href="${domain.link}" target="_blank" onclick="event.stopPropagation()" class="mt-3 block text-center bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-400 py-2 rounded-lg text-sm font-semibold transition-all">
+                        Buy Now →
+                    </a>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function updateDomainCard(index, domain) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return;
+            
+            const newHtml = renderDomainCard(domain, index);
+            const temp = document.createElement('div');
+            temp.innerHTML = newHtml;
+            const newCard = temp.firstElementChild;
+            
+            card.className = newCard.className;
+            card.innerHTML = newCard.innerHTML;
+        }
+
+        function openModal(index) {
+            const domain = generatedDomains[index];
+            const modal = document.getElementById('domainModal');
+            
+            document.getElementById('modalDomain').textContent = domain.name;
+            document.getElementById('modalType').textContent = domain.web3 ? 'WEB3 DOMAIN' : 'TRADITIONAL DOMAIN';
+            document.getElementById('modalType').className = `text-xs font-bold px-3 py-1 rounded-full border ${domain.web3 ? 'text-purple-400 border-purple-400' : 'text-cyan-400 border-cyan-400'}`;
+            document.getElementById('modalCategory').textContent = domain.category.toUpperCase();
+            
+            const statusEl = document.getElementById('modalStatus');
+            if (domain.available) {
+                statusEl.textContent = '✓ AVAILABLE FOR REGISTRATION';
+                statusEl.className = 'inline-block px-4 py-2 rounded-full text-sm font-bold bg-green-500/20 text-green-400 border border-green-500/50';
+            } else {
+                statusEl.textContent = '✗ ALREADY REGISTERED';
+                statusEl.className = 'inline-block px-4 py-2 rounded-full text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/50';
+            }
+            
+            const priceText = domain.web3 && domain.note ? 
+                `$${domain.price} <div class="text-sm text-gray-400 mt-1">${domain.note}</div>` : 
+                `$${domain.price}<span class="text-lg text-gray-400">/first year</span><div class="text-sm text-gray-400 mt-1">Renews at $${domain.renewal}/year</div>`;
+            document.getElementById('modalPrice').innerHTML = priceText;
+            document.getElementById('modalRegistrar').textContent = `Best price at ${domain.registrar}`;
+            
+            const alts = Object.entries(pricingDB)
+                .filter(([ext, data]) => ext === domain.extension && data.registrar !== domain.registrar)
+                .slice(0, 3)
+                .map(([ext, data]) => `<div class="flex justify-between"><span>${data.registrar}</span><span class="text-cyan-400">$${data.price}</span></div>`)
+                .join('') || '<div class="text-gray-500">No cheaper alternatives found</div>';
+            document.getElementById('modalAlternatives').innerHTML = alts;
+            
+            document.getElementById('modalMeaning').textContent = domain.meaning;
+            
+            document.getElementById('modalTrend').textContent = domain.trendScore + '/100';
+            document.getElementById('modalMemory').textContent = domain.memoryScore + '/100';
+            document.getElementById('modalBrand').textContent = domain.brandScore + '/100';
+            
+            document.getElementById('modalBuyLink').href = domain.link;
+            document.getElementById('modalCopy').onclick = () => {
+                navigator.clipboard.writeText(domain.name);
+                document.getElementById('modalCopy').textContent = 'COPIED!';
+                setTimeout(() => document.getElementById('modalCopy').textContent = 'COPY', 2000);
+            };
+            document.getElementById('modalWhois').onclick = () => {
+                window.open(`https://who.is/whois/${domain.name}`, '_blank');
+            };
+            
+            modal.classList.add('active');
+        }
+
+        function applyFilter(filter) {
+            currentFilter = filter;
+            const cards = document.querySelectorAll('.domain-card');
+            
+            cards.forEach((card, idx) => {
+                const domain = generatedDomains[idx];
+                let show = true;
+                
+                if (filter === 'available' && !domain.available) show = false;
+                if (filter === 'web3' && !domain.web3) show = false;
+                if (filter === 'cheap' && domain.price >= 10) show = false;
+                if (filter === 'premium' && domain.price < 20) show = false;
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('generateBtn').addEventListener('click', runGeneration);
+        
+        document.getElementById('loadMoreBtn').addEventListener('click', () => {
+            if (!isGenerating) runGeneration();
+        });
+        
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('domainModal').classList.remove('active');
+        });
+        
+        document.getElementById('domainModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('domainModal')) {
+                document.getElementById('domainModal').classList.remove('active');
+            }
+        });
+        
+        document.getElementById('addKeyword').addEventListener('click', () => {
+            const input = document.getElementById('keywordInput');
+            const val = input.value.trim();
+            if (val && !customKeywords.includes(val)) {
+                customKeywords.push(val);
+                renderKeywords();
+                input.value = '';
+            }
+        });
+        
+        document.getElementById('keywordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('addKeyword').click();
+            }
+        });
+        
+        function renderKeywords() {
+            const container = document.getElementById('keywordTags');
+            container.innerHTML = customKeywords.map(kw => `
+                <span class="bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                    ${kw}
+                    <button onclick="removeKeyword('${kw}')" class="hover:text-white">&times;</button>
+                </span>
+            `).join('');
+        }
+        
+        window.removeKeyword = function(kw) {
+            customKeywords = customKeywords.filter(k => k !== kw);
+            renderKeywords();
+        };
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                applyFilter(e.target.dataset.filter);
+            });
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('domainModal').classList.remove('active');
+            }
+            if (e.key === 'Enter' && e.ctrlKey && !document.getElementById('domainModal').classList.contains('active')) {
+                runGeneration();
+            }
+        });
+    </script>
+</body>
+</html>

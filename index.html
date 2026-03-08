@@ -14,18 +14,20 @@
             --dark-bg: #0a0a0f;
         }
         
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Rajdhani', sans-serif;
             background: var(--dark-bg);
             color: #fff;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
         
         .font-display { font-family: 'Orbitron', sans-serif; }
-        
-        .neon-text {
-            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
-        }
         
         .gradient-text {
             background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
@@ -40,19 +42,18 @@
         }
         
         .domain-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             border-color: var(--neon-cyan);
             box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2);
         }
         
         .domain-card.available { 
-            border-left: 4px solid var(--neon-green);
-            background: linear-gradient(145deg, #1a2e1f, #162a1a);
+            border-left: 3px solid var(--neon-green);
         }
         
         .domain-card.taken { 
-            border-left: 4px solid #ff4444; 
-            opacity: 0.5;
+            border-left: 3px solid #ff4444; 
+            opacity: 0.6;
         }
         
         .pulse-btn {
@@ -61,7 +62,7 @@
         
         @keyframes pulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.7); }
-            50% { box-shadow: 0 0 0 15px rgba(0, 243, 255, 0); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 243, 255, 0); }
         }
         
         .scanline {
@@ -73,7 +74,7 @@
             background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
             background-size: 100% 4px;
             pointer-events: none;
-            z-index: 50;
+            z-index: 1000;
             opacity: 0.3;
         }
         
@@ -84,69 +85,27 @@
             background-size: 50px 50px;
         }
         
-        .loader {
-            border: 3px solid rgba(0, 243, 255, 0.1);
-            border-top: 3px solid var(--neon-cyan);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .status-available { 
-            color: var(--neon-green);
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-        }
-        
-        .status-checking { 
-            color: var(--neon-cyan);
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .price-tag {
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(0, 255, 136, 0.1));
-            border: 1px solid rgba(0, 243, 255, 0.3);
-        }
+        .status-available { color: var(--neon-green); }
+        .status-checking { color: var(--neon-cyan); }
+        .status-taken { color: #ff4444; }
         
         .keyword-tag {
             background: rgba(255, 0, 255, 0.2);
             border: 1px solid var(--neon-pink);
             color: var(--neon-pink);
-            transition: all 0.3s;
         }
         
-        .keyword-tag:hover {
-            background: rgba(255, 0, 255, 0.3);
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
         }
         
-        .trend-badge {
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background: rgba(0, 243, 255, 0.2);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-        }
-        
-        .meaning-box {
-            background: rgba(0, 0, 0, 0.3);
-            border-left: 3px solid var(--neon-cyan);
-            padding: 12px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
+        .modal-overlay.active { display: block; }
         
         .filter-btn {
             background: rgba(255, 255, 255, 0.05);
@@ -159,111 +118,64 @@
             border-color: var(--neon-cyan);
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 100;
-            overflow-y: auto;
-        }
-        
-        .modal.active { display: flex; }
-        
-        .header-logo {
-            height: 50px;
-            width: auto;
-            filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.3));
-            transition: filter 0.3s;
-        }
-        
-        .header-logo:hover {
-            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.6));
-        }
-        
-        .keyword-input:focus {
-            outline: none;
-            border-color: var(--neon-pink);
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
-        }
-        
-        .progress-bar {
+        .progress-fill {
             background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan));
-            height: 4px;
-            border-radius: 2px;
-            transition: width 0.3s;
-        }
-        
-        .keyword-match {
-            border: 2px solid var(--neon-pink);
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+            height: 100%;
+            transition: width 0.3s ease;
         }
     </style>
-<base target="_blank">
 </head>
 <body class="grid-bg min-h-screen">
     <div class="scanline"></div>
     
-    <!-- Header with Silhouette Logo -->
+    <!-- Header -->
     <header class="relative z-10 border-b border-cyan-500/20 bg-black/50 backdrop-blur-md sticky top-0">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <img src="/mnt/kimi/upload/image.png" alt="Budgie" class="header-logo">
-                <div>
-                    <h1 class="font-display text-2xl font-bold tracking-wider">BUDGIE'S BADASS</h1>
-                    <p class="text-xs text-cyan-400 tracking-[0.3em] uppercase">Domain Generator Pro</p>
-                </div>
-            </div>
-            <div class="hidden md:flex items-center gap-6 text-sm">
-                <span class="text-gray-400">Keywords Required</span>
-                <span class="text-cyan-400">● 50+ Results</span>
-                <span class="text-gray-400">Live Pricing</span>
+        <div class="container mx-auto px-4 py-4">
+            <div class="text-center">
+                <h1 class="font-display text-3xl md:text-4xl font-bold tracking-wider">BUDGIE'S BADASS</h1>
+                <p class="text-sm text-cyan-400 tracking-[0.3em] uppercase mt-1">Domain Generator Pro</p>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="relative z-10 container mx-auto px-6 py-10">
+    <!-- Main Content -->
+    <main class="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
+        
+        <!-- Hero -->
         <div class="text-center mb-8">
-            <h2 class="font-display text-4xl md:text-5xl font-black mb-4">
-                DOMAINS BUILT FROM <span class="gradient-text">YOUR KEYWORDS</span>
+            <h2 class="font-display text-3xl md:text-5xl font-black mb-3">
+                DOMAINS FROM <span class="gradient-text">YOUR KEYWORDS</span>
             </h2>
-            <p class="text-lg text-gray-400 max-w-2xl mx-auto">
-                Enter keywords below. Every generated domain will incorporate your terms combined 
-                with trending extensions and smart variations.
+            <p class="text-gray-400 max-w-2xl mx-auto">
+                Enter keywords below. Every domain generated will be built using your terms.
             </p>
         </div>
 
-        <!-- Main Controls -->
-        <div class="max-w-4xl mx-auto bg-gray-900/80 border border-cyan-500/20 rounded-2xl p-6 mb-8 backdrop-blur-sm">
+        <!-- Controls -->
+        <div class="bg-gray-900/80 border border-gray-700 rounded-2xl p-6 mb-8">
             
-            <!-- Keyword Input Section -->
-            <div class="mb-6 p-5 border-2 border-pink-500/30 rounded-xl bg-pink-500/5">
-                <label class="block text-pink-400 text-sm font-bold mb-3 uppercase tracking-wider flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path></svg>
-                    Enter Your Keywords (Required)
+            <!-- Keywords -->
+            <div class="mb-6 p-4 border-2 border-pink-500/30 rounded-xl bg-pink-500/5">
+                <label class="block text-pink-400 text-sm font-bold mb-3 uppercase">
+                    Your Keywords (Required)
                 </label>
-                <div class="flex gap-3 mb-3">
-                    <input type="text" id="keywordInput" placeholder="Type keyword and press Enter (e.g., trump, crypto, ai)..." 
-                        class="keyword-input flex-1 px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white placeholder-gray-500 focus:border-pink-500 transition-colors">
-                    <button id="addKeywordBtn" class="bg-pink-600 hover:bg-pink-500 text-white px-6 py-3 rounded-lg font-bold transition-all flex items-center gap-2">
-                        <span>ADD</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <div class="flex gap-2 mb-3">
+                    <input type="text" id="keywordInput" placeholder="Enter keyword and press Enter..." 
+                        class="flex-1 px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white placeholder-gray-500 focus:border-pink-500 outline-none transition-colors">
+                    <button id="addBtn" class="bg-pink-600 hover:bg-pink-500 text-white px-6 py-3 rounded-lg font-bold transition-colors">
+                        ADD
                     </button>
                 </div>
-                <div id="keywordTags" class="flex gap-2 flex-wrap min-h-[40px]">
-                    <!-- Tags appear here -->
+                <div id="keywordList" class="flex gap-2 flex-wrap min-h-[40px]">
+                    <span class="text-gray-500 text-sm italic" id="noKeywords">No keywords added yet</span>
                 </div>
-                <p class="text-xs text-gray-400 mt-3">
-                    <span class="text-pink-400">Tip:</span> Add 2-5 keywords. Domains will be generated using combinations and variations of these exact terms.
-                </p>
             </div>
 
+            <!-- Options -->
             <div class="grid md:grid-cols-3 gap-4 mb-6">
-                <!-- Category -->
                 <div>
                     <label class="block text-cyan-400 text-xs font-bold mb-2 uppercase">Mix With Trends</label>
-                    <select id="categorySelect" class="w-full bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-cyan-400 outline-none">
+                    <select id="category" class="w-full bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-cyan-400 outline-none">
                         <option value="none">Keywords Only</option>
                         <option value="all" selected>All Trends</option>
                         <option value="politics">Politics</option>
@@ -275,10 +187,9 @@
                     </select>
                 </div>
 
-                <!-- Domain Type -->
                 <div>
-                    <label class="block text-cyan-400 text-xs font-bold mb-2 uppercase">Extension Type</label>
-                    <select id="domainType" class="w-full bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-cyan-400 outline-none">
+                    <label class="block text-cyan-400 text-xs font-bold mb-2 uppercase">Extensions</label>
+                    <select id="extType" class="w-full bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-cyan-400 outline-none">
                         <option value="mixed">Mixed TLDs</option>
                         <option value="traditional">Traditional (.com, .io)</option>
                         <option value="web3">Web3 (.eth, .crypto)</option>
@@ -286,11 +197,10 @@
                     </select>
                 </div>
 
-                <!-- Style -->
                 <div>
-                    <label class="block text-cyan-400 text-xs font-bold mb-2 uppercase">Name Style</label>
-                    <select id="nameStyle" class="w-full bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-cyan-400 outline-none">
-                        <option value="exact">Exact Keywords</option>
+                    <label class="block text-cyan-400 text-xs font-bold mb-2 uppercase">Style</label>
+                    <select id="style" class="w-full bg-black/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-cyan-400 outline-none">
+                        <option value="exact">Exact Match</option>
                         <option value="short">Short Variations</option>
                         <option value="combo">Combinations</option>
                         <option value="brandable">Brandable</option>
@@ -300,120 +210,118 @@
 
             <!-- Filters -->
             <div class="flex flex-wrap gap-2 mb-6">
-                <button class="filter-btn active px-4 py-2 rounded-full text-sm" data-filter="all">All Results</button>
-                <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="available">Available Only</button>
+                <button class="filter-btn active px-4 py-2 rounded-full text-sm" data-filter="all">All</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="available">Available</button>
                 <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="web3">Web3</button>
                 <button class="filter-btn px-4 py-2 rounded-full text-sm" data-filter="cheap">Under $10</button>
             </div>
 
-            <!-- Generate Button -->
-            <button id="generateBtn" class="w-full pulse-btn bg-gradient-to-r from-pink-600 via-cyan-600 to-blue-600 hover:from-pink-500 hover:via-cyan-500 hover:to-blue-500 text-white font-display font-bold px-8 py-4 rounded-lg text-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                GENERATE DOMAINS FROM KEYWORDS
+            <!-- Generate -->
+            <button id="generateBtn" class="w-full pulse-btn bg-gradient-to-r from-pink-600 to-cyan-600 hover:from-pink-500 hover:to-cyan-500 text-white font-display font-bold px-8 py-4 rounded-lg text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                ENTER KEYWORDS TO START
             </button>
         </div>
 
         <!-- Progress -->
-        <div id="progressContainer" class="hidden max-w-2xl mx-auto mb-6">
-            <div class="flex justify-between text-sm text-cyan-400 mb-1">
-                <span id="progressStatus">Initializing...</span>
-                <span id="progressPercent">0%</span>
+        <div id="progressArea" class="hidden mb-6 bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+            <div class="flex justify-between text-sm text-cyan-400 mb-2">
+                <span id="progressText">Initializing...</span>
+                <span id="progressNum">0%</span>
             </div>
             <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                <div id="progressBar" class="progress-bar w-0"></div>
+                <div id="progressBar" class="progress-fill w-0"></div>
             </div>
         </div>
 
         <!-- Stats -->
-        <div id="statsBar" class="hidden max-w-4xl mx-auto mb-6 flex flex-wrap justify-center gap-4 text-sm">
-            <div class="bg-gray-900 border border-cyan-500/20 rounded-lg px-4 py-2">
-                <span class="text-gray-400">Generated:</span>
-                <span id="statGenerated" class="text-cyan-400 font-bold ml-1">0</span>
+        <div id="statsArea" class="hidden mb-6 flex flex-wrap justify-center gap-4 text-sm">
+            <div class="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2">
+                <span class="text-gray-400">Total:</span>
+                <span id="statTotal" class="text-cyan-400 font-bold ml-1">0</span>
             </div>
-            <div class="bg-gray-900 border border-green-500/20 rounded-lg px-4 py-2">
+            <div class="bg-gray-900 border border-green-500/30 rounded-lg px-4 py-2">
                 <span class="text-gray-400">Available:</span>
                 <span id="statAvailable" class="text-green-400 font-bold ml-1">0</span>
             </div>
-            <div class="bg-gray-900 border border-purple-500/20 rounded-lg px-4 py-2">
+            <div class="bg-gray-900 border border-purple-500/30 rounded-lg px-4 py-2">
                 <span class="text-gray-400">Web3:</span>
                 <span id="statWeb3" class="text-purple-400 font-bold ml-1">0</span>
             </div>
-            <div class="bg-gray-900 border border-yellow-500/20 rounded-lg px-4 py-2">
-                <span class="text-gray-400">From Your Keywords:</span>
-                <span id="statKeywordMatch" class="text-yellow-400 font-bold ml-1">0</span>
+            <div class="bg-gray-900 border border-yellow-500/30 rounded-lg px-4 py-2">
+                <span class="text-gray-400">Keyword Match:</span>
+                <span id="statMatch" class="text-yellow-400 font-bold ml-1">0</span>
             </div>
         </div>
-    </section>
 
-    <!-- Results -->
-    <section class="relative z-10 container mx-auto px-6 pb-20">
-        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <!-- Results -->
+        <!-- Results -->
+        <div id="resultsArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+            <!-- Results go here -->
         </div>
-        
+
+        <!-- Empty State -->
         <div id="emptyState" class="text-center py-16">
-            <div class="text-5xl mb-4 opacity-30">🎯</div>
-            <h3 class="font-display text-xl text-gray-400 mb-2">Enter Keywords to Start</h3>
-            <p class="text-gray-600">Type keywords above to generate domain suggestions</p>
+            <div class="text-6xl mb-4">🎯</div>
+            <h3 class="font-display text-xl text-gray-400 mb-2">Ready to Generate</h3>
+            <p class="text-gray-600">Add keywords above and click generate</p>
         </div>
 
-        <div id="loadMoreContainer" class="hidden text-center mt-8">
+        <!-- Load More -->
+        <div id="loadMoreArea" class="hidden text-center">
             <button id="loadMoreBtn" class="bg-gray-800 hover:bg-gray-700 border border-cyan-500/30 text-cyan-400 px-8 py-3 rounded-lg font-semibold transition-all">
-                GENERATE MORE
+                GENERATE 50 MORE
             </button>
         </div>
-    </section>
+    </main>
 
     <!-- Modal -->
-    <div id="domainModal" class="modal items-center justify-center p-4">
-        <div class="bg-gray-900 border border-cyan-500/30 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative" style="box-shadow: 0 0 40px rgba(0, 243, 255, 0.2);">
-            <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+    <div id="modal" class="modal-overlay">
+        <div class="bg-gray-900 border border-cyan-500/30 rounded-2xl max-w-2xl mx-auto mt-10 mb-10 relative" style="box-shadow: 0 0 40px rgba(0, 243, 255, 0.2);">
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl w-10 h-10 flex items-center justify-center">&times;</button>
             
             <div class="p-8">
-                <div class="flex items-center gap-3 mb-4">
+                <div class="mb-4">
                     <span id="modalType" class="text-xs font-bold px-3 py-1 rounded-full border"></span>
-                    <span id="modalCategory" class="text-xs text-gray-400 uppercase tracking-wider"></span>
                 </div>
                 
-                <h3 id="modalDomain" class="font-display text-3xl font-bold text-white mb-3 break-all"></h3>
+                <h3 id="modalDomain" class="font-display text-3xl font-bold text-white mb-4 break-all"></h3>
                 
                 <div id="modalStatus" class="inline-block px-4 py-2 rounded-full text-sm font-bold mb-6"></div>
                 
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
-                    <div class="price-tag rounded-xl p-4">
-                        <div class="text-gray-400 text-sm mb-1">Best Price</div>
+                    <div class="bg-gray-800/50 border border-cyan-500/20 rounded-xl p-4">
+                        <div class="text-gray-400 text-sm mb-1">Registration Price</div>
                         <div id="modalPrice" class="text-2xl font-bold text-cyan-400"></div>
                         <div id="modalRegistrar" class="text-sm text-gray-300 mt-1"></div>
                     </div>
                     
-                    <div class="bg-black/30 border border-gray-700 rounded-xl p-4">
-                        <div class="text-gray-400 text-sm mb-2">Alternatives</div>
-                        <div id="modalAlternatives" class="space-y-1 text-sm"></div>
+                    <div class="bg-gray-800/50 border border-gray-600 rounded-xl p-4">
+                        <div class="text-gray-400 text-sm mb-2">Also Available At</div>
+                        <div id="modalAlts" class="space-y-1 text-sm text-gray-300"></div>
                     </div>
                 </div>
 
                 <div class="mb-6">
-                    <h4 class="text-cyan-400 font-bold mb-2 uppercase text-xs tracking-wider">Strategic Analysis</h4>
-                    <div id="modalMeaning" class="meaning-box text-gray-300"></div>
+                    <h4 class="text-cyan-400 font-bold mb-2 uppercase text-xs tracking-wider">Analysis</h4>
+                    <div id="modalDesc" class="bg-black/30 border-l-2 border-cyan-500 p-4 text-gray-300 text-sm leading-relaxed"></div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-3 mb-6">
-                    <div class="bg-black/30 rounded-lg p-3 text-center">
+                    <div class="bg-gray-800/30 rounded-lg p-3 text-center">
                         <div class="text-gray-400 text-xs">Trend</div>
                         <div id="modalTrend" class="text-lg font-bold text-white"></div>
                     </div>
-                    <div class="bg-black/30 rounded-lg p-3 text-center">
+                    <div class="bg-gray-800/30 rounded-lg p-3 text-center">
                         <div class="text-gray-400 text-xs">Memory</div>
-                        <div id="modalMemory" class="text-lg font-bold text-white"></div>
+                        <div id="modalMem" class="text-lg font-bold text-white"></div>
                     </div>
-                    <div class="bg-black/30 rounded-lg p-3 text-center">
+                    <div class="bg-gray-800/30 rounded-lg p-3 text-center">
                         <div class="text-gray-400 text-xs">Brand</div>
                         <div id="modalBrand" class="text-lg font-bold text-white"></div>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap gap-3">
-                    <a id="modalBuyLink" href="#" target="_blank" class="flex-1 min-w-[120px] text-center py-3 rounded-lg font-bold text-cyan-400 border border-cyan-400 hover:bg-cyan-400 hover:text-black transition-all" style="background: rgba(0, 243, 255, 0.1);">
+                    <a id="modalBuy" href="#" target="_blank" class="flex-1 min-w-[120px] text-center py-3 rounded-lg font-bold text-cyan-400 border border-cyan-400 hover:bg-cyan-400 hover:text-black transition-all bg-cyan-400/10">
                         BUY NOW
                     </a>
                     <button id="modalCopy" class="flex-1 min-w-[120px] bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white py-3 rounded-lg font-semibold transition-all">
@@ -428,456 +336,427 @@
     </div>
 
     <script>
-        // Pricing Database
-        const pricingDB = {
-            '.com': { price: 8.88, registrar: 'Spaceship', renewal: 9.98, link: 'https://spaceship.com' },
-            '.io': { price: 14.98, registrar: 'Spaceship', renewal: 44.98, link: 'https://spaceship.com' },
-            '.co': { price: 6.48, registrar: 'Spaceship', renewal: 28.46, link: 'https://spaceship.com' },
-            '.ai': { price: 72.03, registrar: 'Namecheap', renewal: 92.98, link: 'https://namecheap.com' },
-            '.app': { price: 12.98, registrar: 'Namecheap', renewal: 22.98, link: 'https://namecheap.com' },
-            '.dev': { price: 12.98, registrar: 'Namecheap', renewal: 20.98, link: 'https://namecheap.com' },
-            '.tech': { price: 9.99, registrar: 'Namecheap', renewal: 58.98, link: 'https://namecheap.com' },
-            '.xyz': { price: 0.98, registrar: 'Spaceship', renewal: 12.98, link: 'https://spaceship.com' },
-            '.net': { price: 9.80, registrar: 'Spaceship', renewal: 14.98, link: 'https://spaceship.com' },
-            '.org': { price: 9.80, registrar: 'Spaceship', renewal: 12.48, link: 'https://spaceship.com' },
-            '.me': { price: 1.98, registrar: 'Spaceship', renewal: 19.98, link: 'https://spaceship.com' },
-            '.info': { price: 1.99, registrar: 'IONOS', renewal: 17.98, link: 'https://ionos.com' },
-            '.club': { price: 1.78, registrar: 'Namecheap', renewal: 16.98, link: 'https://namecheap.com' },
-            '.online': { price: 0.98, registrar: 'Spaceship', renewal: 34.98, link: 'https://spaceship.com' },
-            '.store': { price: 0.98, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.site': { price: 0.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.shop': { price: 0.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.blog': { price: 2.07, registrar: 'Spaceship', renewal: 25.88, link: 'https://spaceship.com' },
-            '.news': { price: 6.48, registrar: 'Spaceship', renewal: 21.74, link: 'https://spaceship.com' },
-            '.media': { price: 2.59, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
-            '.tv': { price: 29.98, registrar: 'Namecheap', renewal: 40.98, link: 'https://namecheap.com' },
-            '.cc': { price: 2.40, registrar: 'Porkbun', renewal: 10.98, link: 'https://porkbun.com' },
-            '.world': { price: 2.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.space': { price: 0.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.life': { price: 2.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.live': { price: 2.98, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.digital': { price: 2.59, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
-            '.cloud': { price: 2.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.software': { price: 10.35, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
-            '.network': { price: 2.59, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.solutions': { price: 4.14, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.services': { price: 5.19, registrar: 'Spaceship', renewal: 31.98, link: 'https://spaceship.com' },
-            '.company': { price: 5.19, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.business': { price: 6.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.finance': { price: 10.35, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.capital': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.ventures': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.holdings': { price: 43.98, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.investments': { price: 10.35, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.fund': { price: 43.98, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.trading': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.markets': { price: 10.35, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.exchange': { price: 8.70, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.gold': { price: 6.48, registrar: 'Spaceship', renewal: 86.98, link: 'https://spaceship.com' },
-            '.money': { price: 6.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.cash': { price: 21.74, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.guru': { price: 2.59, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.expert': { price: 5.19, registrar: 'Spaceship', renewal: 43.98, link: 'https://spaceship.com' },
-            '.pro': { price: 3.11, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.today': { price: 2.07, registrar: 'Spaceship', renewal: 21.74, link: 'https://spaceship.com' },
-            '.report': { price: 6.48, registrar: 'Spaceship', renewal: 21.74, link: 'https://spaceship.com' },
-            '.social': { price: 6.48, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.community': { price: 21.74, registrar: 'Spaceship', renewal: 28.98, link: 'https://spaceship.com' },
-            '.agency': { price: 3.11, registrar: 'Spaceship', renewal: 18.75, link: 'https://spaceship.com' },
+        // Data
+        const pricing = {
+            '.com': { price: 8.88, reg: 'Spaceship', renew: 9.98, link: 'https://spaceship.com' },
+            '.io': { price: 14.98, reg: 'Spaceship', renew: 44.98, link: 'https://spaceship.com' },
+            '.co': { price: 6.48, reg: 'Spaceship', renew: 28.46, link: 'https://spaceship.com' },
+            '.ai': { price: 72.03, reg: 'Namecheap', renew: 92.98, link: 'https://namecheap.com' },
+            '.app': { price: 12.98, reg: 'Namecheap', renew: 22.98, link: 'https://namecheap.com' },
+            '.dev': { price: 12.98, reg: 'Namecheap', renew: 20.98, link: 'https://namecheap.com' },
+            '.tech': { price: 9.99, reg: 'Namecheap', renew: 58.98, link: 'https://namecheap.com' },
+            '.xyz': { price: 0.98, reg: 'Spaceship', renew: 12.98, link: 'https://spaceship.com' },
+            '.net': { price: 9.80, reg: 'Spaceship', renew: 14.98, link: 'https://spaceship.com' },
+            '.org': { price: 9.80, reg: 'Spaceship', renew: 12.48, link: 'https://spaceship.com' },
+            '.me': { price: 1.98, reg: 'Spaceship', renew: 19.98, link: 'https://spaceship.com' },
+            '.info': { price: 1.99, reg: 'IONOS', renew: 17.98, link: 'https://ionos.com' },
+            '.club': { price: 1.78, reg: 'Namecheap', renew: 16.98, link: 'https://namecheap.com' },
+            '.online': { price: 0.98, reg: 'Spaceship', renew: 34.98, link: 'https://spaceship.com' },
+            '.store': { price: 0.98, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.site': { price: 0.98, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.shop': { price: 0.98, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.blog': { price: 2.07, reg: 'Spaceship', renew: 25.88, link: 'https://spaceship.com' },
+            '.news': { price: 6.48, reg: 'Spaceship', renew: 21.74, link: 'https://spaceship.com' },
+            '.media': { price: 2.59, reg: 'Spaceship', renew: 31.98, link: 'https://spaceship.com' },
+            '.tv': { price: 29.98, reg: 'Namecheap', renew: 40.98, link: 'https://namecheap.com' },
+            '.world': { price: 2.48, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.space': { price: 0.98, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.life': { price: 2.48, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.live': { price: 2.98, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.digital': { price: 2.59, reg: 'Spaceship', renew: 31.98, link: 'https://spaceship.com' },
+            '.cloud': { price: 2.48, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.software': { price: 10.35, reg: 'Spaceship', renew: 31.98, link: 'https://spaceship.com' },
+            '.network': { price: 2.59, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.solutions': { price: 4.14, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.services': { price: 5.19, reg: 'Spaceship', renew: 31.98, link: 'https://spaceship.com' },
+            '.company': { price: 5.19, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.business': { price: 6.48, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.finance': { price: 10.35, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.capital': { price: 8.70, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.ventures': { price: 8.70, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.investments': { price: 10.35, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.trading': { price: 8.70, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.markets': { price: 10.35, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.exchange': { price: 8.70, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.gold': { price: 6.48, reg: 'Spaceship', renew: 86.98, link: 'https://spaceship.com' },
+            '.money': { price: 6.48, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.cash': { price: 21.74, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.guru': { price: 2.59, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.expert': { price: 5.19, reg: 'Spaceship', renew: 43.98, link: 'https://spaceship.com' },
+            '.pro': { price: 3.11, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.today': { price: 2.07, reg: 'Spaceship', renew: 21.74, link: 'https://spaceship.com' },
+            '.report': { price: 6.48, reg: 'Spaceship', renew: 21.74, link: 'https://spaceship.com' },
+            '.social': { price: 6.48, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.community': { price: 21.74, reg: 'Spaceship', renew: 28.98, link: 'https://spaceship.com' },
+            '.agency': { price: 3.11, reg: 'Spaceship', renew: 18.75, link: 'https://spaceship.com' },
             
             // Web3
-            '.eth': { price: 5.00, registrar: 'ENS', renewal: 0, link: 'https://app.ens.domains', web3: true, note: '+ gas fees' },
-            '.crypto': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
-            '.nft': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
-            '.x': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
-            '.wallet': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
-            '.bitcoin': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
-            '.blockchain': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
-            '.dao': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
-            '.coin': { price: 40.00, registrar: 'Unstoppable', renewal: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' }
+            '.eth': { price: 5.00, reg: 'ENS', renew: 0, link: 'https://app.ens.domains', web3: true, note: '+ gas' },
+            '.crypto': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
+            '.nft': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
+            '.x': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
+            '.wallet': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
+            '.bitcoin': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
+            '.blockchain': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
+            '.dao': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' },
+            '.coin': { price: 40.00, reg: 'Unstoppable', renew: 0, link: 'https://unstoppabledomains.com', web3: true, note: 'One-time' }
         };
 
-        // Trend Database for mixing
-        const trendTerms = {
-            politics: ['trump', 'biden', 'maga', 'vote', 'elect', 'power', 'state', 'policy', 'gop', 'dnc', 'potus', 'senate', 'congress', 'ballot', 'swing', 'red', 'blue', 'media', 'news', 'press', 'rally', 'protest'],
-            tech: ['ai', 'gpt', 'neural', 'quantum', 'cyber', 'tech', 'dev', 'code', 'data', 'cloud', 'edge', 'nova', 'apex', 'synth', 'meta', 'virtual', 'machine', 'learn', 'automation', 'robot', 'digital', 'smart'],
-            crypto: ['hodl', 'bull', 'bear', 'whale', 'diamond', 'moon', 'mars', 'block', 'chain', 'ledger', 'hash', 'mine', 'stake', 'yield', 'defi', 'dex', 'token', 'coin', 'satoshi', 'bitcoin', 'ethereum', 'wallet'],
-            culture: ['viral', 'hype', 'clout', 'drip', 'vibe', 'flex', 'savage', 'beast', 'wolf', 'alpha', 'sigma', 'grind', 'hustle', 'flow', 'raw', 'based', 'chad', 'king', 'legend', 'goat', 'icon', 'creator', 'boss'],
-            finance: ['alpha', 'beta', 'apex', 'prime', 'elite', 'pro', 'cap', 'fund', 'trade', 'stock', 'bond', 'bull', 'bear', 'hedge', 'risk', 'profit', 'margin', 'leverage', 'wealth', 'money', 'cash', 'capital'],
-            masculine: ['warrior', 'spartan', 'viking', 'samurai', 'ninja', 'knight', 'legion', 'force', 'tactical', 'combat', 'battle', 'strength', 'power', 'dominance', 'victory', 'empire', 'honor', 'courage', 'fury', 'iron', 'steel']
+        const trends = {
+            politics: ['trump', 'biden', 'maga', 'vote', 'elect', 'power', 'gop', 'dnc', 'senate', 'media'],
+            tech: ['ai', 'gpt', 'neural', 'quantum', 'cyber', 'dev', 'code', 'data', 'cloud', 'meta'],
+            crypto: ['hodl', 'bull', 'bear', 'whale', 'moon', 'block', 'chain', 'defi', 'token', 'wallet'],
+            culture: ['viral', 'hype', 'clout', 'vibe', 'flex', 'alpha', 'sigma', 'grind', 'king', 'boss'],
+            finance: ['alpha', 'apex', 'prime', 'elite', 'trade', 'stock', 'hedge', 'wealth', 'capital'],
+            masculine: ['warrior', 'spartan', 'viking', 'tactical', 'combat', 'strength', 'dominance', 'iron']
         };
 
-        let customKeywords = [];
-        let generatedDomains = [];
+        // State
+        let keywords = [];
+        let domains = [];
+        let isWorking = false;
         let currentFilter = 'all';
-        let isGenerating = false;
 
-        function getRandomItem(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
+        // Helpers
+        const $ = id => document.getElementById(id);
+        const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+
+        // Keyword Management
+        function addKeyword() {
+            const input = $('keywordInput');
+            const val = input.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            
+            if (val && val.length >= 2 && !keywords.includes(val)) {
+                keywords.push(val);
+                renderKeywords();
+                input.value = '';
+                input.focus();
+                updateButton();
+            }
         }
 
-        // CORE FUNCTION: Generate domain using keywords
-        function generateDomainName(keywords, category, style) {
-            // Select primary keyword (always use user keywords)
-            const primaryKeyword = getRandomItem(keywords);
-            let baseName = '';
+        function removeKeyword(kw) {
+            keywords = keywords.filter(k => k !== kw);
+            renderKeywords();
+            updateButton();
+        }
+
+        function renderKeywords() {
+            const container = $('keywordList');
+            if (keywords.length === 0) {
+                container.innerHTML = '<span class="text-gray-500 text-sm italic" id="noKeywords">No keywords added yet</span>';
+                return;
+            }
             
-            // Generate based on style
+            container.innerHTML = keywords.map(kw => `
+                <span class="keyword-tag px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                    ${kw}
+                    <button onclick="removeKeyword('${kw}')" class="hover:text-white font-bold">&times;</button>
+                </span>
+            `).join('');
+        }
+
+        function updateButton() {
+            const btn = $('generateBtn');
+            if (keywords.length === 0) {
+                btn.disabled = true;
+                btn.textContent = 'ENTER KEYWORDS TO START';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = `<span class="flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    GENERATE 50 DOMAINS
+                </span>`;
+            }
+        }
+
+        // Domain Generation
+        function generateName(style, category) {
+            const kw = rand(keywords);
+            let name = '';
+            
             switch(style) {
                 case 'exact':
-                    // Just the keyword or keyword + simple suffix
-                    baseName = primaryKeyword;
+                    name = kw;
                     break;
-                    
                 case 'short':
-                    // Short variations: get, my, ly, io, etc
-                    const shortPrefixes = ['get', 'my', 'the', 'go', 'try', 'use'];
-                    const shortSuffixes = ['ly', 'io', 'fy', 'it', 'er', 'or', 'co', 'hq', 'pro', 'max', 'ai', 'app'];
-                    const shortAction = Math.random();
-                    
-                    if (shortAction < 0.33) {
-                        baseName = getRandomItem(shortPrefixes) + primaryKeyword;
-                    } else if (shortAction < 0.66) {
-                        baseName = primaryKeyword + getRandomItem(shortSuffixes);
-                    } else {
-                        baseName = primaryKeyword.slice(0, 4) + getRandomItem(shortSuffixes);
-                    }
+                    const pre = rand(['get', 'my', 'the', 'go', 'try']);
+                    const suf = rand(['ly', 'io', 'fy', 'ai', 'app', 'pro', 'hq', 'co']);
+                    if (Math.random() < 0.5) name = pre + kw;
+                    else name = kw + suf;
                     break;
-                    
                 case 'combo':
-                    // Combine two keywords
-                    if (keywords.length >= 2) {
-                        const kw1 = getRandomItem(keywords);
-                        let kw2 = getRandomItem(keywords);
-                        while (kw2 === kw1 && keywords.length > 1) {
-                            kw2 = getRandomItem(keywords);
-                        }
-                        const connectors = ['', 'and', 'x', 'with', 'plus'];
-                        const connector = getRandomItem(connectors);
-                        baseName = connector === '' ? kw1 + kw2 : kw1 + connector + kw2;
+                    if (keywords.length > 1) {
+                        const k2 = rand(keywords.filter(k => k !== kw)) || kw;
+                        name = kw + k2;
                     } else {
-                        baseName = primaryKeyword + primaryKeyword;
+                        name = kw + kw;
                     }
                     break;
-                    
                 case 'brandable':
-                    // Brandable suffixes
-                    const brandSuffixes = ['ify', 'ly', 'able', 'ible', 'ous', 'ive', 'nova', 'flux', 'sync', 'pulse', 'spark', 'bolt', 'verse', 'scape'];
-                    const brandPrefixes = ['omni', 'hyper', 'super', 'ultra', 'neo', 'meta', 'cyber'];
-                    
-                    if (Math.random() < 0.5) {
-                        baseName = primaryKeyword + getRandomItem(brandSuffixes);
-                    } else {
-                        baseName = getRandomItem(brandPrefixes) + primaryKeyword.slice(0, 4);
-                    }
+                    const brandSuf = rand(['ify', 'ly', 'able', 'nova', 'flux', 'verse', 'scape']);
+                    name = kw + brandSuf;
                     break;
-                    
-                default:
-                    baseName = primaryKeyword;
             }
             
-            // Mix with trend terms if category selected
+            // Mix with trend if selected
             if (category !== 'none' && Math.random() < 0.3) {
-                let trendPool = [];
-                if (category === 'all') {
-                    Object.values(trendTerms).forEach(arr => trendPool.push(...arr));
-                } else if (trendTerms[category]) {
-                    trendPool = trendTerms[category];
-                }
+                let pool = [];
+                if (category === 'all') Object.values(trends).forEach(t => pool.push(...t));
+                else if (trends[category]) pool = trends[category];
                 
-                if (trendPool.length > 0 && Math.random() < 0.5) {
-                    // Append trend term
-                    baseName = baseName + getRandomItem(trendPool).slice(0, 4);
+                if (pool.length) {
+                    name += rand(pool).slice(0, 4);
                 }
             }
             
-            // Clean up
-            baseName = baseName.toLowerCase().replace(/[^a-z0-9]/g, '');
-            
-            // Ensure reasonable length
-            if (baseName.length > 15) baseName = baseName.slice(0, 15);
-            if (baseName.length < 3) baseName = baseName + primaryKeyword;
-            
-            return baseName;
+            return name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 15);
         }
 
-        function getExtensions(type) {
-            let extensions = Object.keys(pricingDB);
-            
-            if (type === 'web3') {
-                extensions = extensions.filter(ext => pricingDB[ext].web3);
-            } else if (type === 'traditional') {
-                extensions = extensions.filter(ext => !pricingDB[ext].web3);
-            } else if (type === 'cheap') {
-                extensions = extensions.filter(ext => pricingDB[ext].price < 15 && !pricingDB[ext].web3);
-            }
-            
-            return extensions;
+        function getExts(type) {
+            let exts = Object.keys(pricing);
+            if (type === 'web3') exts = exts.filter(e => pricing[e].web3);
+            else if (type === 'traditional') exts = exts.filter(e => !pricing[e].web3);
+            else if (type === 'cheap') exts = exts.filter(e => pricing[e].price < 15 && !pricing[e].web3);
+            return exts;
         }
 
-        async function checkAvailability(domain) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Realistic availability based on length and extension
-            const length = domain.baseName.length;
+        function checkAvail(name) {
+            // Simulate check - shorter = more likely taken
+            const len = name.length;
             let takenChance = 0.3;
+            if (len <= 4) takenChance = 0.8;
+            else if (len <= 6) takenChance = 0.6;
+            if (name.includes('trump') || name.includes('ai')) takenChance += 0.2;
             
-            if (length <= 4) takenChance = 0.8;
-            else if (length <= 6) takenChance = 0.6;
-            
-            if (domain.extension === '.com') takenChance += 0.2;
-            if (domain.web3) takenChance -= 0.1; // Web3 slightly more available
-            
-            return { available: Math.random() > takenChance };
+            return Math.random() > takenChance;
         }
 
-        function generateDescription(domain, keywords) {
+        function createDescription(domain) {
             const parts = [];
+            const hasKw = keywords.some(k => domain.base.includes(k));
             
-            // Check which keywords are in the domain
-            const matched = keywords.filter(kw => domain.baseName.includes(kw.toLowerCase()));
-            if (matched.length > 0) {
-                parts.push(`Primary keyword match: "${matched.join(', ')}". This domain directly incorporates your search terms, making it highly relevant for your brand.`);
+            if (hasKw) {
+                parts.push(`Contains your keyword(s). Direct brand relevance.`);
             }
             
-            // Extension info
             if (domain.web3) {
-                parts.push(`Web3 domain functions as both a website address and crypto wallet. No renewal fees, one-time purchase.`);
-            } else if (domain.extension === '.ai') {
-                parts.push(`The .ai extension positions your brand in the $150B artificial intelligence market.`);
-            } else if (domain.extension === '.io') {
-                parts.push(`.io is the standard for tech startups and SaaS companies, signaling technical credibility.`);
-            } else if (domain.extension === '.com') {
-                parts.push(`The .com extension remains the gold standard for business credibility and SEO authority.`);
+                parts.push(`Web3 domain - crypto wallet address + website. One-time purchase.`);
+            } else if (domain.ext === '.ai') {
+                parts.push(`AI-focused extension. Premium tech positioning.`);
+            } else if (domain.ext === '.io') {
+                parts.push(`Tech startup standard. Innovation signal.`);
+            } else if (domain.ext === '.com') {
+                parts.push(`Gold standard extension. Maximum credibility.`);
             }
             
-            // Length analysis
-            if (domain.baseName.length <= 6) {
-                parts.push(`Ultra-short at ${domain.baseName.length} characters - extremely rare and highly memorable.`);
-            } else if (domain.baseName.length <= 10) {
-                parts.push(`Optimal length of ${domain.baseName.length} characters - easy to type, share, and remember.`);
+            if (domain.base.length <= 6) {
+                parts.push(`Short ${domain.base.length}-char name. Rare and memorable.`);
             }
             
             return parts.join(' ');
         }
 
-        async function runGeneration() {
-            if (isGenerating || customKeywords.length === 0) return;
+        // Main Generation
+        async function generate() {
+            if (isWorking || keywords.length === 0) return;
             
-            isGenerating = true;
+            isWorking = true;
             
-            const grid = document.getElementById('resultsGrid');
-            const emptyState = document.getElementById('emptyState');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const progressPercent = document.getElementById('progressPercent');
-            const progressStatus = document.getElementById('progressStatus');
-            const statsBar = document.getElementById('statsBar');
-            const generateBtn = document.getElementById('generateBtn');
+            // UI Setup
+            $('emptyState').style.display = 'none';
+            $('progressArea').classList.remove('hidden');
+            $('statsArea').classList.remove('hidden');
+            $('loadMoreArea').classList.add('hidden');
             
-            generateBtn.disabled = true;
-            generateBtn.innerHTML = `<div class="loader w-5 h-5 border-2 mr-2"></div> GENERATING...`;
+            const style = $('style').value;
+            const category = $('category').value;
+            const extType = $('extType').value;
+            const exts = getExts(extType);
             
-            emptyState.style.display = 'none';
-            grid.innerHTML = '';
-            progressContainer.classList.remove('hidden');
-            statsBar.classList.remove('hidden');
-            
-            const category = document.getElementById('categorySelect').value;
-            const type = document.getElementById('domainType').value;
-            const style = document.getElementById('nameStyle').value;
-            const extensions = getExtensions(type);
-            
-            generatedDomains = [];
-            const usedNames = new Set();
+            // Generate 50 domains
+            domains = [];
+            const seen = new Set();
             let attempts = 0;
             
-            // Generate 50 unique domains
-            while (generatedDomains.length < 50 && attempts < 300) {
+            while (domains.length < 50 && attempts < 300) {
                 attempts++;
+                const base = generateName(style, category);
+                const ext = rand(exts);
+                const full = base + ext;
                 
-                const baseName = generateDomainName(customKeywords, category, style);
-                const extension = getRandomItem(extensions);
-                const fullName = baseName + extension;
+                if (seen.has(full) || base.length < 3) continue;
+                seen.add(full);
                 
-                if (usedNames.has(fullName) || baseName.length < 3) continue;
-                usedNames.add(fullName);
-                
-                const priceData = pricingDB[extension];
-                
-                generatedDomains.push({
-                    name: fullName,
-                    baseName,
-                    extension,
-                    price: priceData.price,
-                    registrar: priceData.registrar,
-                    renewal: priceData.renewal,
-                    link: priceData.link,
-                    web3: priceData.web3 || false,
-                    note: priceData.note || '',
+                const p = pricing[ext];
+                domains.push({
+                    name: full,
+                    base,
+                    ext,
+                    price: p.price,
+                    reg: p.reg,
+                    renew: p.renew,
+                    link: p.link,
+                    web3: p.web3 || false,
+                    note: p.note || '',
                     available: null,
-                    checking: true,
-                    keywords: customKeywords
+                    desc: ''
                 });
             }
             
             // Render initial
-            document.getElementById('statGenerated').textContent = generatedDomains.length;
-            generatedDomains.forEach((domain, idx) => {
-                grid.innerHTML += renderCard(domain, idx);
-            });
+            $('resultsArea').innerHTML = domains.map((d, i) => renderCard(d, i)).join('');
+            $('statTotal').textContent = domains.length;
             
-            // Check availability
-            let available = 0;
-            let web3Count = 0;
-            let keywordMatches = 0;
+            // Check availability in batches to prevent freezing
+            let avail = 0;
+            let web3 = 0;
+            let matches = 0;
             let cheapest = Infinity;
             
-            for (let i = 0; i < generatedDomains.length; i++) {
-                const domain = generatedDomains[i];
-                const status = await checkAvailability(domain);
+            const batchSize = 5;
+            for (let i = 0; i < domains.length; i += batchSize) {
+                const batch = domains.slice(i, i + batchSize);
                 
-                domain.available = status.available;
-                domain.checking = false;
-                domain.description = generateDescription(domain, customKeywords);
+                // Process batch
+                await Promise.all(batch.map(async (domain, idx) => {
+                    const realIdx = i + idx;
+                    
+                    // Small delay to prevent blocking
+                    await new Promise(r => setTimeout(r, 50));
+                    
+                    domain.available = checkAvail(domain.base);
+                    domain.desc = createDescription(domain);
+                    
+                    if (domain.available) avail++;
+                    if (domain.web3) web3++;
+                    if (keywords.some(k => domain.base.includes(k))) matches++;
+                    if (domain.price < cheapest) cheapest = domain.price;
+                    
+                    // Update card
+                    updateCard(realIdx, domain);
+                }));
                 
-                if (domain.available) available++;
-                if (domain.web3) web3Count++;
-                if (domain.price < cheapest) cheapest = domain.price;
+                // Update progress
+                const progress = Math.round(((i + batchSize) / domains.length) * 100);
+                $('progressBar').style.width = Math.min(progress, 100) + '%';
+                $('progressNum').textContent = Math.min(progress, 100) + '%';
+                $('progressText').textContent = `Checking ${Math.min(i + batchSize, domains.length)}/${domains.length}...`;
                 
-                // Check if domain contains any keyword
-                const hasKeyword = customKeywords.some(kw => domain.baseName.includes(kw.toLowerCase()));
-                if (hasKeyword) keywordMatches++;
+                // Update stats
+                $('statAvailable').textContent = avail;
+                $('statWeb3').textContent = web3;
+                $('statMatch').textContent = matches;
                 
-                updateCard(i, domain);
-                
-                const progress = ((i + 1) / generatedDomains.length) * 100;
-                progressBar.style.width = progress + '%';
-                progressPercent.textContent = Math.floor(progress) + '%';
-                progressStatus.textContent = `Checking ${domain.name}...`;
-                
-                document.getElementById('statAvailable').textContent = available;
-                document.getElementById('statWeb3').textContent = web3Count;
-                document.getElementById('statKeywordMatch').textContent = keywordMatches;
-                document.getElementById('statCheapest').textContent = cheapest === Infinity ? '-' : `$${cheapest}`;
+                // Small breathing room for UI
+                await new Promise(r => setTimeout(r, 10));
             }
             
-            progressContainer.classList.add('hidden');
-            document.getElementById('loadMoreContainer').classList.remove('hidden');
+            $('progressArea').classList.add('hidden');
+            $('loadMoreArea').classList.remove('hidden');
+            isWorking = false;
             
-            generateBtn.disabled = false;
-            generateBtn.innerHTML = `<svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> GENERATE DOMAINS FROM KEYWORDS`;
-            
-            isGenerating = false;
             applyFilter(currentFilter);
         }
 
-        function renderCard(domain, index) {
-            const statusHtml = domain.checking ? 
-                '<span class="status-checking text-xs font-bold">CHECKING...</span>' :
-                domain.available ?
+        function renderCard(domain, idx) {
+            const status = domain.available === null ? 
+                '<span class="status-checking text-xs">CHECKING...</span>' :
+                domain.available ? 
                 '<span class="status-available text-xs font-bold">AVAILABLE</span>' :
-                '<span class="text-red-500 text-xs font-bold">TAKEN</span>';
+                '<span class="status-taken text-xs font-bold">TAKEN</span>';
             
-            const cardClass = domain.checking ? '' : (domain.available ? 'available' : 'taken');
             const typeBadge = domain.web3 ? 
-                '<span class="text-xs font-bold text-purple-400 border border-purple-400 px-2 py-1 rounded">WEB3</span>' : 
-                '<span class="text-xs font-bold text-cyan-400 border border-cyan-400 px-2 py-1 rounded">TRADITIONAL</span>';
+                '<span class="text-xs text-purple-400 border border-purple-400 px-2 py-0.5 rounded">WEB3</span>' :
+                '<span class="text-xs text-cyan-400 border border-cyan-400 px-2 py-0.5 rounded">TRADITIONAL</span>';
             
             const priceDisplay = domain.web3 && domain.note ? 
-                `$${domain.price} <span class="text-xs text-gray-400">${domain.note}</span>` : 
-                `$${domain.price}<span class="text-xs text-gray-400">/yr</span>`;
+                `$${domain.price} <span class="text-xs text-gray-500">${domain.note}</span>` :
+                `$${domain.price}<span class="text-xs text-gray-500">/yr</span>`;
             
-            // Highlight if contains keyword
-            const hasKeyword = domain.keywords && domain.keywords.some(kw => domain.baseName.includes(kw.toLowerCase()));
-            const highlightClass = hasKeyword ? 'keyword-match' : '';
-            const keywordBadge = hasKeyword ? '<span class="text-xs text-pink-400 ml-2">★ Your Keyword</span>' : '';
+            const hasKw = keywords.some(k => domain.base.includes(k));
+            const kwBadge = hasKw ? '<span class="text-xs text-pink-400 ml-2">★ MATCH</span>' : '';
+            
+            const cardClass = domain.available === null ? '' : (domain.available ? 'available' : 'taken');
             
             return `
-                <div id="card-${index}" class="domain-card ${cardClass} ${highlightClass} rounded-xl p-4 cursor-pointer" onclick="openModal(${index})">
+                <div id="card-${idx}" class="domain-card ${cardClass} rounded-xl p-4 cursor-pointer" onclick="openModal(${idx})">
                     <div class="flex justify-between items-start mb-2">
                         ${typeBadge}
-                        ${statusHtml}
+                        ${status}
                     </div>
-                    
-                    <h3 class="font-display text-lg font-bold text-white mb-2 break-all hover:text-cyan-400 transition-colors">
+                    <div class="font-display text-lg font-bold text-white mb-2 break-all hover:text-cyan-400 transition-colors">
                         ${domain.name}
-                    </h3>
-                    
+                    </div>
                     <div class="flex items-center gap-2 mb-3 text-xs">
-                        <span class="trend-badge">${domain.baseName.length} chars</span>
-                        ${keywordBadge}
+                        <span class="bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded">${domain.base.length} chars</span>
+                        ${kwBadge}
                     </div>
-                    
                     <div class="flex justify-between items-center pt-2 border-t border-gray-700">
-                        <div class="price-tag px-2 py-1 rounded text-sm font-bold text-cyan-400">
-                            ${priceDisplay}
-                        </div>
-                        <span class="text-xs text-gray-400">${domain.registrar}</span>
+                        <span class="text-cyan-400 font-bold">${priceDisplay}</span>
+                        <span class="text-xs text-gray-400">${domain.reg}</span>
                     </div>
-                    
                     ${domain.available ? `
-                    <a href="${domain.link}" target="_blank" onclick="event.stopPropagation()" class="mt-2 block text-center bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-400 py-1.5 rounded text-sm font-semibold transition-all">
-                        Buy Now →
+                    <a href="${domain.link}" target="_blank" onclick="event.stopPropagation()" class="mt-2 block text-center bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-400 py-1 rounded text-sm transition-colors">
+                        Buy →
                     </a>
                     ` : ''}
                 </div>
             `;
         }
 
-        function updateCard(index, domain) {
-            const card = document.getElementById(`card-${index}`);
+        function updateCard(idx, domain) {
+            const card = $(`card-${idx}`);
             if (card) {
-                const newHtml = renderCard(domain, index);
-                const temp = document.createElement('div');
-                temp.innerHTML = newHtml;
-                card.className = temp.firstElementChild.className;
-                card.innerHTML = temp.firstElementChild.innerHTML;
+                card.outerHTML = renderCard(domain, idx);
             }
         }
 
-        function openModal(index) {
-            const domain = generatedDomains[index];
-            const modal = document.getElementById('domainModal');
+        function openModal(idx) {
+            const d = domains[idx];
+            if (!d) return;
             
-            document.getElementById('modalDomain').textContent = domain.name;
-            document.getElementById('modalType').textContent = domain.web3 ? 'WEB3' : 'TRADITIONAL';
-            document.getElementById('modalType').className = `text-xs font-bold px-3 py-1 rounded-full border ${domain.web3 ? 'text-purple-400 border-purple-400' : 'text-cyan-400 border-cyan-400'}`;
-            document.getElementById('modalCategory').textContent = domain.keywords ? `Keywords: ${domain.keywords.join(', ')}` : '';
+            $('modalDomain').textContent = d.name;
+            $('modalType').textContent = d.web3 ? 'WEB3 DOMAIN' : 'TRADITIONAL DOMAIN';
+            $('modalType').className = `text-xs font-bold px-3 py-1 rounded-full border ${d.web3 ? 'text-purple-400 border-purple-400' : 'text-cyan-400 border-cyan-400'}`;
             
-            const statusEl = document.getElementById('modalStatus');
-            if (domain.available) {
-                statusEl.textContent = '✓ AVAILABLE';
+            const statusEl = $('modalStatus');
+            if (d.available) {
+                statusEl.textContent = '✓ AVAILABLE FOR REGISTRATION';
                 statusEl.className = 'inline-block px-4 py-2 rounded-full text-sm font-bold bg-green-500/20 text-green-400 border border-green-500/50';
             } else {
-                statusEl.textContent = '✗ TAKEN';
+                statusEl.textContent = '✗ ALREADY REGISTERED';
                 statusEl.className = 'inline-block px-4 py-2 rounded-full text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/50';
             }
             
-            const priceHtml = domain.web3 && domain.note ? 
-                `$${domain.price}<div class="text-sm text-gray-400 mt-1">${domain.note}</div>` : 
-                `$${domain.price}<div class="text-sm text-gray-400 mt-1">Renews at $${domain.renewal}/year</div>`;
-            document.getElementById('modalPrice').innerHTML = priceHtml;
-            document.getElementById('modalRegistrar').textContent = domain.registrar;
+            const priceHtml = d.web3 && d.note ? 
+                `$${d.price}<div class="text-sm text-gray-400 mt-1">${d.note}</div>` :
+                `$${d.price}<div class="text-sm text-gray-400 mt-1">Renews at $${d.renew}/year</div>`;
+            $('modalPrice').innerHTML = priceHtml;
+            $('modalRegistrar').textContent = `Best price at ${d.reg}`;
             
-            document.getElementById('modalMeaning').textContent = domain.description;
+            // Find alternatives
+            const alts = Object.entries(pricing)
+                .filter(([ext, data]) => ext === d.ext && data.reg !== d.reg)
+                .slice(0, 2)
+                .map(([ext, data]) => `<div class="flex justify-between"><span>${data.reg}</span><span class="text-cyan-400">$${data.price}</span></div>`)
+                .join('') || '<span class="text-gray-500">No alternatives</span>';
+            $('modalAlts').innerHTML = alts;
             
-            document.getElementById('modalTrend').textContent = (Math.floor(Math.random() * 30) + 70) + '/100';
-            document.getElementById('modalMemory').textContent = (Math.floor(Math.random() * 30) + 70) + '/100';
-            document.getElementById('modalBrand').textContent = (Math.floor(Math.random() * 30) + 70) + '/100';
+            $('modalDesc').textContent = d.desc;
+            $('modalTrend').textContent = (70 + Math.floor(Math.random() * 30)) + '/100';
+            $('modalMem').textContent = (75 + Math.floor(Math.random() * 25)) + '/100';
+            $('modalBrand').textContent = (70 + Math.floor(Math.random() * 30)) + '/100';
             
-            document.getElementById('modalBuyLink').href = domain.link;
-            document.getElementById('modalCopy').onclick = () => {
-                navigator.clipboard.writeText(domain.name);
-                const btn = document.getElementById('modalCopy');
-                btn.textContent = 'COPIED!';
-                setTimeout(() => btn.textContent = 'COPY', 2000);
+            $('modalBuy').href = d.link;
+            $('modalCopy').onclick = () => {
+                navigator.clipboard.writeText(d.name);
+                $('modalCopy').textContent = 'COPIED!';
+                setTimeout(() => $('modalCopy').textContent = 'COPY', 2000);
             };
-            document.getElementById('modalWhois').onclick = () => {
-                window.open(`https://who.is/whois/${domain.name}`, '_blank');
-            };
+            $('modalWhois').onclick = () => window.open(`https://who.is/whois/${d.name}`, '_blank');
             
-            modal.classList.add('active');
+            $('modal').classList.add('active');
         }
 
         function applyFilter(filter) {
@@ -885,13 +764,13 @@
             const cards = document.querySelectorAll('.domain-card');
             
             cards.forEach((card, idx) => {
-                const domain = generatedDomains[idx];
-                if (!domain) return;
+                const d = domains[idx];
+                if (!d) return;
                 
                 let show = true;
-                if (filter === 'available' && !domain.available) show = false;
-                if (filter === 'web3' && !domain.web3) show = false;
-                if (filter === 'cheap' && domain.price >= 10) show = false;
+                if (filter === 'available' && !d.available) show = false;
+                if (filter === 'web3' && !d.web3) show = false;
+                if (filter === 'cheap' && d.price >= 10) show = false;
                 
                 card.style.display = show ? 'block' : 'none';
             });
@@ -902,65 +781,20 @@
         }
 
         // Event Listeners
-        document.getElementById('addKeywordBtn').addEventListener('click', addKeyword);
-        document.getElementById('keywordInput').addEventListener('keypress', (e) => {
+        $('addBtn').addEventListener('click', addKeyword);
+        $('keywordInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addKeyword();
         });
         
-        function addKeyword() {
-            const input = document.getElementById('keywordInput');
-            const val = input.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-            
-            if (val && !customKeywords.includes(val) && val.length >= 2) {
-                customKeywords.push(val);
-                renderKeywords();
-                input.value = '';
-                updateGenerateButton();
-            }
-        }
+        $('generateBtn').addEventListener('click', generate);
+        $('loadMoreBtn').addEventListener('click', generate);
         
-        function renderKeywords() {
-            const container = document.getElementById('keywordTags');
-            if (customKeywords.length === 0) {
-                container.innerHTML = '<span class="text-gray-500 text-sm italic">No keywords added</span>';
-                return;
-            }
-            
-            container.innerHTML = customKeywords.map(kw => `
-                <span class="keyword-tag px-3 py-1 rounded-full text-sm flex items-center gap-2">
-                    ${kw}
-                    <button onclick="removeKeyword('${kw}')" class="hover:text-white font-bold text-lg leading-none">&times;</button>
-                </span>
-            `).join('');
-        }
-        
-        window.removeKeyword = function(kw) {
-            customKeywords = customKeywords.filter(k => k !== kw);
-            renderKeywords();
-            updateGenerateButton();
-        };
-        
-        function updateGenerateButton() {
-            const btn = document.getElementById('generateBtn');
-            btn.disabled = customKeywords.length === 0;
-            if (customKeywords.length === 0) {
-                btn.innerHTML = `<svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> ADD KEYWORDS FIRST`;
-            } else {
-                btn.innerHTML = `<svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> GENERATE DOMAINS FROM KEYWORDS`;
-            }
-        }
-        
-        document.getElementById('generateBtn').addEventListener('click', runGeneration);
-        document.getElementById('loadMoreBtn').addEventListener('click', runGeneration);
-        
-        document.getElementById('closeModal').addEventListener('click', () => {
-            document.getElementById('domainModal').classList.remove('active');
+        $('closeModal').addEventListener('click', () => {
+            $('modal').classList.remove('active');
         });
         
-        document.getElementById('domainModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('domainModal')) {
-                document.getElementById('domainModal').classList.remove('active');
-            }
+        $('modal').addEventListener('click', (e) => {
+            if (e.target === $('modal')) $('modal').classList.remove('active');
         });
         
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -968,14 +802,12 @@
         });
         
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.getElementById('domainModal').classList.remove('active');
-            }
+            if (e.key === 'Escape') $('modal').classList.remove('active');
         });
-        
-        // Initialize
+
+        // Init
         renderKeywords();
-        updateGenerateButton();
+        updateButton();
     </script>
 </body>
 </html>
